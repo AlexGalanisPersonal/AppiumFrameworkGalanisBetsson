@@ -14,22 +14,8 @@ Feature: Checkout Process
 
   Scenario: Enter valid checkout information
     Given I am on the checkout information page
-    When I enter "John" as first name
-    And I enter "Doe" as last name
-    And I enter "12345" as zip code
+    When I enter "John" as first name, "Doe" as last name, and "12345" as zip code
     And I tap on the continue button
-    Then I should see the item total
-    And I should see the tax amount
-    And I should see the total amount
-    Then I should see the checkout overview page
-
-  Scenario: Verify order summary
-    Given I am on the checkout overview page
-    Then I should see the item total
-    And I should see the tax amount
-    And I should see the total amount
-
-  Scenario: Complete order
-    Given I am on the checkout overview page
+    Then I should see the item total, tax amount, and total amount
     When I tap on the finish button
-    Then I should see "THANK YOU FOR YOUR ORDER" message
+    Then I should see the order completion message

@@ -34,23 +34,22 @@ public class DriverManager {
             URL url = new URL(config.getEnvProperty("appium.server.url"));
             driver = new AndroidDriver(url, caps);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new RuntimeException("Failed to initialize driver", e);
         }
     }
 
     public static void resetApp() {
         try {
+            String appPackage = config.getEnvProperty("app.package");
             if (driver != null) {
-                driver.terminateApp(config.getEnvProperty("app.package"));
+                driver.terminateApp(appPackage);
                 Thread.sleep(1000);
-                driver.activateApp(config.getEnvProperty("app.package"));
+                driver.activateApp(appPackage);
                 Thread.sleep(2000);
             } else {
                 getDriver();
             }
         } catch (Exception e) {
-            System.out.println("Error during app reset, recreating driver");
             quitDriver();
             getDriver();
         }
@@ -64,7 +63,7 @@ public class DriverManager {
                 driver.quit();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            // Silently handle quit errors
         } finally {
             driver = null;
         }

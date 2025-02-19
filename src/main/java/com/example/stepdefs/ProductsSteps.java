@@ -21,109 +21,64 @@ public class ProductsSteps {
 
     @When("I tap on the first product")
     public void iTapOnTheFirstProduct() {
-        // Wait for products to be visible first
         wait.until(ExpectedConditions.presenceOfElementLocated(
                 By.xpath("//android.widget.ScrollView[@content-desc='test-PRODUCTS']")));
 
-        // Find and click the first product's clickable container
         MobileElement firstProduct = (MobileElement) wait.until(ExpectedConditions.elementToBeClickable(
                 By.xpath("//android.view.ViewGroup[@content-desc='test-Item']//android.view.ViewGroup[@clickable='true']")));
         firstProduct.click();
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     @When("I tap on the {string} button for the first product")
-    public void iTapOnTheButtonForTheFirstProduct(String buttonText) throws InterruptedException {
-        try {
-            Thread.sleep(1000); // Wait for any animations
-            String xpath;
-            if (buttonText.equals("ADD TO CART")) {
-                xpath = "(//android.view.ViewGroup[@content-desc='test-ADD TO CART'])[1]";
-            } else if (buttonText.equals("REMOVE")) {
-                xpath = "(//android.view.ViewGroup[@content-desc='test-REMOVE'])[1]";
-            } else {
-                xpath = String.format("(//android.view.ViewGroup[@content-desc='test-%s'])[1]", buttonText);
-            }
+    public void iTapOnTheButtonForTheFirstProduct(String buttonText) {
+        String xpath = buttonText.equals("ADD TO CART") ?
+                "(//android.view.ViewGroup[@content-desc='test-ADD TO CART'])[1]" :
+                buttonText.equals("REMOVE") ?
+                        "(//android.view.ViewGroup[@content-desc='test-REMOVE'])[1]" :
+                        String.format("(//android.view.ViewGroup[@content-desc='test-%s'])[1]", buttonText);
 
-            MobileElement button = (MobileElement) wait.until(ExpectedConditions.elementToBeClickable(
-                    By.xpath(xpath)));
-            button.click();
-
-            Thread.sleep(2000); // Increased wait time after button click
-        } catch (Exception e) {
-            System.out.println("Failed to click button. Current page source:");
-            System.out.println(driver.getPageSource());
-            throw e;
-        }
+        MobileElement button = (MobileElement) wait.until(ExpectedConditions.elementToBeClickable(
+                By.xpath(xpath)));
+        button.click();
     }
 
     @Then("I should see the cart badge with count {string}")
     public void iShouldSeeTheCartBadgeWithCount(String count) {
-        try {
-            Thread.sleep(1000); // Wait for badge to update
-            MobileElement cartBadge = (MobileElement) wait.until(ExpectedConditions.presenceOfElementLocated(
-                    By.xpath("//android.view.ViewGroup[@content-desc='test-Cart']//android.widget.TextView")));
-            Assert.assertEquals(cartBadge.getText(), count, "Cart badge count doesn't match expected value");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        MobileElement cartBadge = (MobileElement) wait.until(ExpectedConditions.presenceOfElementLocated(
+                By.xpath("//android.view.ViewGroup[@content-desc='test-Cart']//android.widget.TextView")));
+        Assert.assertEquals(cartBadge.getText(), count, "Cart badge count doesn't match expected value");
     }
 
     @Then("I should not see the cart badge")
     public void iShouldNotSeeTheCartBadge() {
+        WebDriverWait shortWait = new WebDriverWait(driver, 5);
         try {
-            Thread.sleep(2000); // Increased wait time for badge to disappear
-
-            // Wait for badge to disappear (up to 5 seconds)
-            WebDriverWait shortWait = new WebDriverWait(driver, 5);
-            try {
-                shortWait.until(ExpectedConditions.invisibilityOfElementLocated(
-                        By.xpath("//android.view.ViewGroup[@content-desc='test-Cart']//android.widget.TextView")));
-            } catch (TimeoutException e) {
-                // If element is still present after waiting, fail the test
-                Assert.fail("Cart badge is still visible when it should be hidden");
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            shortWait.until(ExpectedConditions.invisibilityOfElementLocated(
+                    By.xpath("//android.view.ViewGroup[@content-desc='test-Cart']//android.widget.TextView")));
+        } catch (TimeoutException e) {
+            Assert.fail("Cart badge is still visible when it should be hidden");
         }
     }
 
     @Then("the button text should change to {string}")
     public void theButtonTextShouldChangeTo(String expectedText) {
-        try {
-            Thread.sleep(1000); // Wait for button text to update
-            String xpath = String.format("//android.view.ViewGroup[@content-desc='test-%s']", expectedText);
-            MobileElement button = (MobileElement) wait.until(ExpectedConditions.presenceOfElementLocated(
-                    By.xpath(xpath)));
-            Assert.assertTrue(button.isDisplayed(), "Button with text '" + expectedText + "' is not displayed");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        String xpath = String.format("//android.view.ViewGroup[@content-desc='test-%s']", expectedText);
+        MobileElement button = (MobileElement) wait.until(ExpectedConditions.presenceOfElementLocated(
+                By.xpath(xpath)));
+        Assert.assertTrue(button.isDisplayed(), "Button with text '" + expectedText + "' is not displayed");
     }
 
     @Then("I should see the product details page")
     public void iShouldSeeTheProductDetailsPage() {
-        try {
-            Thread.sleep(1000); // Wait for transition
-            // Check for either the back button or image container
-            boolean hasBackButton = !driver.findElements(
-                    By.xpath("//android.view.ViewGroup[@content-desc='test-BACK TO PRODUCTS']")).isEmpty();
-            boolean hasImageContainer = !driver.findElements(
-                    By.xpath("//android.view.ViewGroup[@content-desc='test-Image Container']")).isEmpty();
-            Assert.assertTrue(hasBackButton || hasImageContainer, "Product details page is not displayed");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        boolean hasBackButton = !driver.findElements(
+                By.xpath("//android.view.ViewGroup[@content-desc='test-BACK TO PRODUCTS']")).isEmpty();
+        boolean hasImageContainer = !driver.findElements(
+                By.xpath("//android.view.ViewGroup[@content-desc='test-Image Container']")).isEmpty();
+        Assert.assertTrue(hasBackButton || hasImageContainer, "Product details page is not displayed");
     }
 
     @Then("I should see the product title")
     public void iShouldSeeTheProductTitle() {
-        // Look for any text element containing a product name
         MobileElement element = (MobileElement) wait.until(ExpectedConditions.presenceOfElementLocated(
                 By.xpath("//android.widget.TextView[contains(@text, 'Sauce Labs')]")));
         Assert.assertTrue(element.isDisplayed(), "Product title is not displayed");
@@ -139,7 +94,6 @@ public class ProductsSteps {
 
     @Then("I should see the product description")
     public void iShouldSeeTheProductDescription() {
-        // The description is inside the test-Description container
         MobileElement element = (MobileElement) wait.until(ExpectedConditions.presenceOfElementLocated(
                 By.xpath("//android.view.ViewGroup[@content-desc='test-Description']//android.widget.TextView[2]")));
         Assert.assertTrue(element.isDisplayed(), "Product description is not displayed");
