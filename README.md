@@ -1,4 +1,4 @@
-# 🎯 Sauce Demo Mobile Test Automation Framework
+# 🎯 Swag Labs Mobile Test Automation Framework
 
 A comprehensive end-to-end mobile test automation framework for the Sauce Demo mobile application using Appium, Cucumber, and Java. The framework demonstrates modern testing practices and clean architecture principles.
 
